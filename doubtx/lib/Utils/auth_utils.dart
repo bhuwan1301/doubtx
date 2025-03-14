@@ -44,7 +44,7 @@ class AuthWidgets {
         Text(
           errorText,
           style: TextStyle(
-            fontSize: screenWidth * (14 / 375),
+            fontSize: screenWidth * (12 / 375),
             color: Colors.red,
           ),
         ),
@@ -164,6 +164,12 @@ class AuthValidation {
     
     return null;
   }
+  static String? validateUsername(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Please enter your username";
+    }    
+    return null;
+  }
 
   static String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
@@ -198,7 +204,7 @@ class AuthCommon {
   static const Color errorColor = Colors.red;
   
   static const double defaultPadding = 24.0;
-  static const double standardSpacing = 16.0;
+  static const double standardSpacing = 10.0;
   static const double smallSpacing = 5.0;
   static const double largeSpacing = 40.0;
   

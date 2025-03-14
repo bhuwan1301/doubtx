@@ -27,4 +27,10 @@ class DataCubit extends Cubit<Map<String, dynamic>> {
     await _storage.write(key: _storageKey, value: jsonEncode(newData));
     emit(newData); // Update state
   }
+
+  /// Logout
+  Future<void> signOut() async {
+    await _storage.deleteAll();
+    emit({}); // Update state
+  }
 }

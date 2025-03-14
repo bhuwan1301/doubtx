@@ -3,14 +3,12 @@ import 'package:get/get.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as flutter_bloc;
 import 'package:doubtx/Bloc/data_bloc.dart';
 import 'package:doubtx/Pages/wrapper.dart';
-
 import 'package:doubtx/Pages/Authentication/login.dart';
 import 'package:doubtx/Pages/Authentication/Signup/signup.dart';
 
 import 'package:doubtx/Pages/Userpages/homepage.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
   runApp(
     flutter_bloc.MultiBlocProvider(
       providers: [
