@@ -408,7 +408,14 @@ class _SignUpPageState extends State<SignUpPage> {
 
                       // Check if registration was successful
                       if (signupresponse.statusCode == 201) {
-                        context.read<DataCubit>().updateData(userbody);
+                        final Map<String, dynamic> signupresponseData =
+                            jsonDecode(signupresponse.body);
+                        final Map<String, dynamic> userDataMap =
+                            signupresponseData['user'];
+                        if(userDataMap.containsKey('passwordHash')){
+                          userDataMap.remove('passwordHash');
+                        }
+                        context.read<DataCubit>().updateData(userDataMap);
                         Get.snackbar("Account Created",
                             "Your account has been created succesfully.");
 

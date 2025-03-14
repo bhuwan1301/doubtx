@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:doubtx/Bloc/data_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:doubtx/Utils/auth_utils.dart';
@@ -126,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
 
                     switch (loginresponse.statusCode) {
                       case 200:
-                        final responseData = jsonDecode(loginresponse.body);
+                        // final responseData = jsonDecode(loginresponse.body);
                         // return {
                         //   'success': true,
                         //   'message': responseData['message'],
@@ -134,17 +136,21 @@ class _LoginPageState extends State<LoginPage> {
                         // };
 
                         try {
-                          final fetchprofileresponse = await http.post(fetchurl,
-                              headers: {
-                                'Content-Type': 'application/json',
-                              },
-                              body: jsonEncode({
-                                'username': _usernameController.text,
-                              }));
+                          final fetchprofileresponse = await http.get(
+                            Uri.parse(
+                                '$fetchurl?username=${_usernameController.text}'), // Send username in query params
+                            headers: {'Content-Type': 'application/json'},
+                          );
+
                           switch (fetchprofileresponse.statusCode) {
                             case 200:
-                              final userData =
+                              final Map<String, dynamic> userData =
                                   jsonDecode(fetchprofileresponse.body);
+                              context.read<DataCubit>().updateData(userData);
+                              Get.offAllNamed('/homepage');
+
+                            case 404:
+                              Get.snackbar("Error", "Couldn't fetch user data");
 
                             case 500:
                               Get.snackbar("Error", "Server error occured");
