@@ -45,10 +45,20 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // App Logo or Title
+              Image.asset(
+                'assets/logo/logo.png',
+                height: screenWidth * (100 / 375),
+              ),
+              SizedBox(height: 30),
               Text(
-                'Login',
+                'Login Your',
                 style: AuthTextStyles.getTitleStyle(screenWidth),
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.start,
+              ),
+              Text(
+                'Account',
+                style: AuthTextStyles.getTitleStyle(screenWidth),
+                textAlign: TextAlign.start,
               ),
 
               SizedBox(height: AuthCommon.largeSpacing),
@@ -189,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
               // Sign up link
               AuthWidgets.buildLinkRow(
                 text: "Don't have an account?",
-                linkText: "Create one",
+                linkText: "Sign Up",
                 screenWidth: screenWidth,
                 onPressed: () {
                   Get.offAllNamed('/signuppage');

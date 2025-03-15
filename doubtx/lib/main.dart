@@ -5,8 +5,10 @@ import 'package:doubtx/Bloc/data_bloc.dart';
 import 'package:doubtx/Pages/wrapper.dart';
 import 'package:doubtx/Pages/Authentication/login.dart';
 import 'package:doubtx/Pages/Authentication/Signup/signup.dart';
+import 'package:doubtx/Pages/Authentication/onboarding.dart';
 
 import 'package:doubtx/Pages/Userpages/homepage.dart';
+import 'package:doubtx/splash.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
@@ -27,16 +29,18 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'FitLer',
       theme: ThemeData.light(),
-      home: const Wrapper(), // Set splash screen as initial route
+      home: const SplashScreen(), // Set splash screen as initial route
       debugShowCheckedModeBanner: false,
       getPages: [
-        // main page
-        GetPage(name: '/wrapper', page: () => const Wrapper()),
+        
+        GetPage(name: '/splashscreen', page: () => const SplashScreen(), transition: Transition.fadeIn, transitionDuration: const Duration(milliseconds: 300)),
+        GetPage(name: '/wrapper', page: () => const Wrapper(), transition: Transition.fadeIn, transitionDuration: const Duration(milliseconds: 300)),
 
-        GetPage(name: '/loginpage', page: () => const LoginPage()),
-        GetPage(name: '/signuppage', page: () => const SignUpPage()),
+        GetPage(name: '/onboarding', page: () => const OnboardingScreen(), transition: Transition.fadeIn, transitionDuration: const Duration(milliseconds: 300)),
+        GetPage(name: '/loginpage', page: () => const LoginPage(), transition: Transition.fadeIn, transitionDuration: const Duration(milliseconds: 300)),
+        GetPage(name: '/signuppage', page: () => const SignUpPage(), transition: Transition.fadeIn, transitionDuration: const Duration(milliseconds: 300)),
 
-        GetPage(name: '/homepage', page: () => const UserHomePage()),
+        GetPage(name: '/homepage', page: () => const UserHomePage(), transition: Transition.fadeIn, transitionDuration: const Duration(milliseconds: 300)),
       ],
     );
   }

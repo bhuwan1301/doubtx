@@ -15,18 +15,19 @@ class AuthWidgets {
       controller: controller,
       decoration: InputDecoration(
         hintText: hintText,
-        prefixIcon: Icon(prefixIcon),
+        hintStyle: TextStyle(color: Colors.grey),
+        prefixIcon: Icon(prefixIcon, color: Colors.grey,),
         suffixIcon: isPassword 
             ? IconButton(
                 onPressed: onToggleVisibility,
-                icon: Icon(hideText ? Icons.visibility_off : Icons.visibility),
+                icon: Icon(hideText ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
               ) 
             : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Color(0xff232627),
       ),
       obscureText: isPassword ? hideText : false,
       keyboardType: keyboardType,
@@ -62,10 +63,10 @@ class AuthWidgets {
     return ElevatedButton(
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xff11A8AE),
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(15),
         ),
       ),
       child: isLoading
@@ -102,6 +103,7 @@ class AuthWidgets {
           text,
           style: TextStyle(
             fontSize: screenWidth * (16 / 375),
+            color: Colors.grey,
           ),
         ),
         TextButton(
@@ -111,6 +113,7 @@ class AuthWidgets {
             style: TextStyle(
               fontSize: screenWidth * (16 / 375),
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
         ),
@@ -124,6 +127,7 @@ class AuthTextStyles {
   static TextStyle getTitleStyle(double screenWidth) => TextStyle(
     fontSize: screenWidth * (30 / 375),
     fontWeight: FontWeight.bold,
+    color: Colors.white,
   );
 
   static TextStyle getBodyStyle(double screenWidth) => TextStyle(
@@ -199,7 +203,7 @@ class AuthValidation {
 
 // Auth Common Styles and Constants
 class AuthCommon {
-  static const Color bgColor = Colors.yellowAccent;
+  static const Color bgColor = Color(0xff141718);
   static const Color primaryColor = Colors.blue;
   static const Color errorColor = Colors.red;
   

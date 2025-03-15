@@ -113,6 +113,11 @@ class _SignUpPageState extends State<SignUpPage> {
             children: [
               SizedBox(height: AuthCommon.largeSpacing),
               // App Title
+              Image.asset(
+                'assets/logo/logo.png',
+                height: screenWidth * (100 / 375),
+              ),
+              SizedBox(height: 30),
               Text(
                 'Create Account',
                 style: AuthTextStyles.getTitleStyle(screenWidth),
@@ -412,7 +417,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             jsonDecode(signupresponse.body);
                         final Map<String, dynamic> userDataMap =
                             signupresponseData['user'];
-                        if(userDataMap.containsKey('passwordHash')){
+                        if (userDataMap.containsKey('passwordHash')) {
                           userDataMap.remove('passwordHash');
                         }
                         context.read<DataCubit>().updateData(userDataMap);
