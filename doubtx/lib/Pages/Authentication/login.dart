@@ -66,8 +66,8 @@ class _LoginPageState extends State<LoginPage> {
               // Email Field
               AuthWidgets.buildTextField(
                 controller: _usernameController,
-                hintText: 'Enter your email',
-                prefixIcon: Icons.email,
+                hintText: 'Enter your username',
+                prefixIcon: Icons.alternate_email,
                 keyboardType: TextInputType.name,
               ),
 
@@ -146,11 +146,13 @@ class _LoginPageState extends State<LoginPage> {
                         // };
 
                         try {
-                          final fetchprofileresponse = await http.get(
-                            Uri.parse(
-                                '$fetchurl?username=${_usernameController.text}'), // Send username in query params
-                            headers: {'Content-Type': 'application/json'},
-                          );
+                          final fetchprofileresponse = await http.post(fetchurl,
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                              body: jsonEncode({
+                                'username': _usernameController.text.trim(),
+                              }));
 
                           switch (fetchprofileresponse.statusCode) {
                             case 200:
@@ -160,32 +162,43 @@ class _LoginPageState extends State<LoginPage> {
                               Get.offAllNamed('/homepage');
 
                             case 404:
-                              Get.snackbar("Error", "Couldn't fetch user data");
+                              Get.snackbar("Error", "Couldn't fetch user data",
+                                  backgroundColor: Colors.white);
 
                             case 500:
-                              Get.snackbar("Error", "Server error occured");
+                              Get.snackbar(
+                                  "Error", jsonDecode(loginresponse.body),
+                                  backgroundColor: Colors.white);
                             default:
-                              Get.snackbar("Error", "Some error occured");
+                              Get.snackbar("Error", "Some error occured",
+                                  backgroundColor: Colors.white);
                           }
                         } catch (e) {
-                          Get.snackbar("Error", e.toString());
+                          Get.snackbar("Error", e.toString(),
+                              backgroundColor: Colors.white);
                         }
 
                       case 401:
-                        Get.snackbar("Failed", "Invalid username or password");
+                        Get.snackbar("Failed", "Invalid username or password",
+                            backgroundColor: Colors.white);
                       case 403:
                         Get.snackbar("Account locked",
-                            "Your account has been locked, please contact support");
+                            "Your account has been locked, please contact support",
+                            backgroundColor: Colors.white);
                       case 404:
                         Get.snackbar("Account not found",
-                            "Couldn't find an account with provided credentials");
+                            "Couldn't find an account with provided credentials",
+                            backgroundColor: Colors.white);
                       case 500:
-                        Get.snackbar("Error", "Server error occured");
+                        Get.snackbar("Error", "Server error occured",
+                            backgroundColor: Colors.white);
                       default:
-                        Get.snackbar("Error", "An error occured");
+                        Get.snackbar("Error", "An error occured",
+                            backgroundColor: Colors.white);
                     }
                   } catch (e) {
-                    Get.snackbar("Error", e.toString());
+                    Get.snackbar("Error", e.toString(),
+                        backgroundColor: Colors.white);
                   }
 
                   setState(() {

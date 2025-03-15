@@ -12,8 +12,10 @@ class AuthWidgets {
     TextInputType keyboardType = TextInputType.text,
   }) {
     return TextField(
+      style: TextStyle(color: Colors.white),
       controller: controller,
       decoration: InputDecoration(
+        
         hintText: hintText,
         hintStyle: TextStyle(color: Colors.grey),
         prefixIcon: Icon(prefixIcon, color: Colors.grey,),

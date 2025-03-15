@@ -16,6 +16,6 @@ class _WrapperState extends State<Wrapper> {
   Widget build(BuildContext context) {
     Map<String, dynamic> user = context.watch<DataCubit>().state;
 
-    return user.containsKey('Name') ? UserHomePage() : OnboardingScreen();
+    return user.containsKey('firstName') ? UserHomePage() : OnboardingScreen();
   }
 }

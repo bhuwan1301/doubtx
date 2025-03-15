@@ -22,13 +22,31 @@ class _UserHomePageState extends State<UserHomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(user['Name']),
-          Text(user['Email']),
-          Text(user['Age'].toString()),
+          Text(user['_id']??""),
+          Text(user['userID']??""),
+          Text(user['userName']??""),
+          Text(user['firstName']??""),
+          Text(user['lastName']??""),
+          Text(user['countryCode']??""),
+          Text(user['contactNumber'].toString()??""),
+          Text(user['mailAddr']??""),
+          Text(user['dateOfBirth']??""),
+          Text(user['gender']??""),
+          Text(user['profilePicture']??""),
+          Text(user['accountCreationDate']??""),
+          Text(user['role']??""),
+          Text(user['lastLogin']??""),
+          Text(user['lastActivityDate']??""),
+          Text(user['ipLastLogin']??""),
+          
           ElevatedButton(onPressed: (){
             context.read<DataCubit>().signOut();
-            Get.offAllNamed('/wrapper');
+            Get.offAllNamed('/loginpage');
           }, child: Text("Log out")),
+          ElevatedButton(onPressed: (){
+            context.read<DataCubit>().signOut();
+            print(user);
+          }, child: Text("print details")),
         ],
       ),
     ));

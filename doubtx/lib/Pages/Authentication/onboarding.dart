@@ -174,7 +174,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   duration: const Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
                                 );
-                              } else {}
+                              } else {
+                                Get.offAllNamed('/loginpage');
+                              }
                             },
                             icon: const Icon(
                               Icons.arrow_forward_rounded,

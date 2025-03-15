@@ -1,7 +1,7 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doubtx/Bloc/data_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:doubtx/Utils/auth_utils.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
@@ -329,7 +329,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
               // Next Button
               AuthWidgets.buildActionButton(
-                  text: 'Next',
+                  text: 'Sign Up',
                   isLoading: isProcessing,
                   screenWidth: screenWidth,
                   onPressed: () async {
@@ -422,14 +422,14 @@ class _SignUpPageState extends State<SignUpPage> {
                         }
                         context.read<DataCubit>().updateData(userDataMap);
                         Get.snackbar("Account Created",
-                            "Your account has been created succesfully.");
+                            "Your account has been created succesfully.", backgroundColor: Colors.white);
 
                         Get.offAllNamed('/homepage');
                       } else {
-                        Get.snackbar("Failed", "Failed to create account.");
+                        Get.snackbar("Failed", "Failed to create account.", backgroundColor: Colors.white);
                       }
                     } catch (e) {
-                      Get.snackbar("Error", e.toString());
+                      Get.snackbar("Error", e.toString(), backgroundColor: Colors.white);
                     }
                     setState(() {
                       isProcessing = false;
