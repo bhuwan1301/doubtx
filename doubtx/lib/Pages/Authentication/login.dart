@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:doubtx/Bloc/data_bloc.dart';
+import 'package:doubtx/Bloc/user_data_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -123,11 +123,9 @@ class _LoginPageState extends State<LoginPage> {
                   }
 
                   // Implement login logic here
-                  final loginurl = Uri.parse('${ENV.baseURL}/login');
-                  final fetchurl = Uri.parse('${ENV.baseURL}/fetch-profile');
 
                   try {
-                    final loginresponse = await http.post(loginurl,
+                    final loginresponse = await http.post(ENV.loginurl,
                         headers: {
                           'Content-Type': 'application/json',
                         },
@@ -146,13 +144,14 @@ class _LoginPageState extends State<LoginPage> {
                         // };
 
                         try {
-                          final fetchprofileresponse = await http.post(fetchurl,
-                              headers: {
-                                'Content-Type': 'application/json',
-                              },
-                              body: jsonEncode({
-                                'username': _usernameController.text.trim(),
-                              }));
+                          final fetchprofileresponse =
+                              await http.post(ENV.fetchurl,
+                                  headers: {
+                                    'Content-Type': 'application/json',
+                                  },
+                                  body: jsonEncode({
+                                    'username': _usernameController.text.trim(),
+                                  }));
 
                           switch (fetchprofileresponse.statusCode) {
                             case 200:
@@ -162,43 +161,60 @@ class _LoginPageState extends State<LoginPage> {
                               Get.offAllNamed('/homepage');
 
                             case 404:
-                              Get.snackbar("Error", "Couldn't fetch user data",
-                                  backgroundColor: Colors.white);
+                              Get.snackbar(
+                                "Error",
+                                "Couldn't fetch user data",
+                              );
 
                             case 500:
                               Get.snackbar(
-                                  "Error", jsonDecode(loginresponse.body),
-                                  backgroundColor: Colors.white);
+                                "Error",
+                                jsonDecode(loginresponse.body),
+                              );
                             default:
-                              Get.snackbar("Error", "Some error occured",
-                                  backgroundColor: Colors.white);
+                              Get.snackbar(
+                                "Error",
+                                "Some error occured",
+                              );
                           }
                         } catch (e) {
-                          Get.snackbar("Error", e.toString(),
-                              backgroundColor: Colors.white);
+                          Get.snackbar(
+                            "Error",
+                            e.toString(),
+                          );
                         }
 
                       case 401:
-                        Get.snackbar("Failed", "Invalid username or password",
-                            backgroundColor: Colors.white);
+                        Get.snackbar(
+                          "Failed",
+                          "Invalid username or password",
+                        );
                       case 403:
-                        Get.snackbar("Account locked",
-                            "Your account has been locked, please contact support",
-                            backgroundColor: Colors.white);
+                        Get.snackbar(
+                          "Account locked",
+                          "Your account has been locked, please contact support",
+                        );
                       case 404:
-                        Get.snackbar("Account not found",
-                            "Couldn't find an account with provided credentials",
-                            backgroundColor: Colors.white);
+                        Get.snackbar(
+                          "Account not found",
+                          "Couldn't find an account with provided credentials",
+                        );
                       case 500:
-                        Get.snackbar("Error", "Server error occured",
-                            backgroundColor: Colors.white);
+                        Get.snackbar(
+                          "Error",
+                          "Server error occured",
+                        );
                       default:
-                        Get.snackbar("Error", "An error occured",
-                            backgroundColor: Colors.white);
+                        Get.snackbar(
+                          "Error",
+                          "An error occured",
+                        );
                     }
                   } catch (e) {
-                    Get.snackbar("Error", e.toString(),
-                        backgroundColor: Colors.white);
+                    Get.snackbar(
+                      "Error",
+                      e.toString(),
+                    );
                   }
 
                   setState(() {

@@ -2,13 +2,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 
-class DataCubit extends Cubit<Map<String, dynamic>> {
+class MessagesCubit extends Cubit<Map<String, dynamic>> {
   final FlutterSecureStorage _storage = const FlutterSecureStorage(
       aOptions: AndroidOptions(encryptedSharedPreferences: true));
 
-  final String _storageKey = "UserDataMap";
+  final String _storageKey = "PromptsAndResponses";
 
-  DataCubit() : super({}) {
+  MessagesCubit() : super({'userPrompts': [], 'bodhxResponses': []}) {
     _loadData();
   }
 
@@ -18,7 +18,7 @@ class DataCubit extends Cubit<Map<String, dynamic>> {
     if (storedData != null) {
       emit(jsonDecode(storedData)); // Update state with saved user data
     }else{
-      emit({});
+      emit({'userPrompts': [], 'bodhxResponses': []});
     }
   }
 
@@ -28,9 +28,9 @@ class DataCubit extends Cubit<Map<String, dynamic>> {
     emit(newData); // Update state
   }
 
-  /// Logout
-  Future<void> signOut() async {
-    await _storage.deleteAll();
-    emit({}); // Update state
+  /// clear messages
+  Future<void> clearData() async {
+    await _storage.write(key: _storageKey, value: jsonEncode({'userPrompts': [], 'bodhxResponses': []}));
+    emit({'userPrompts': [], 'bodhxResponses': []}); // Update state
   }
 }

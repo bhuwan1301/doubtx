@@ -2,7 +2,7 @@ import 'package:doubtx/Utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:doubtx/Bloc/data_bloc.dart';
+import 'package:doubtx/Bloc/user_data_bloc.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
-    Map<String, dynamic> user = context.watch<DataCubit>().state;
+    Map<String, dynamic>? user = context.watch<DataCubit>().state;
 
     return Scaffold(
         backgroundColor: CommonUtils.bgColor,

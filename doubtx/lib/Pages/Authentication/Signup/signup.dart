@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:doubtx/Bloc/data_bloc.dart';
+import 'package:doubtx/Bloc/user_data_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:doubtx/Utils/auth_utils.dart';
 import 'package:get/get.dart';
@@ -163,7 +163,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   // Country Code Dropdown
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Color(0xff232627),
                       borderRadius: AuthCommon.defaultBorderRadius,
                       border: Border.all(color: Colors.grey.shade400),
                     ),
@@ -174,7 +174,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         icon: const Icon(Icons.arrow_drop_down),
                         elevation: 16,
                         style: TextStyle(
-                            color: Colors.black,
+                            color: Colors.white,
                             fontSize: screenWidth * (16 / 375)),
                         onChanged: (String? value) {
                           setState(() {
@@ -203,7 +203,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Color(0xff232627),
                       ),
                       keyboardType: TextInputType.phone,
                     ),
@@ -237,7 +237,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: Color(0xff232627),
                     ),
                     keyboardType: TextInputType.datetime,
                   ),
@@ -250,7 +250,7 @@ class _SignUpPageState extends State<SignUpPage> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Color(0xff232627),
                   borderRadius: AuthCommon.defaultBorderRadius,
                   border: Border.all(color: Colors.grey.shade400),
                 ),
@@ -261,7 +261,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     icon: const Icon(Icons.arrow_drop_down),
                     elevation: 16,
                     style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.white,
                         fontSize: screenWidth * (16 / 375)),
                     onChanged: (String? value) {
                       setState(() {
@@ -379,8 +379,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     }
                     // Implement signup logic or navigation to OTP page here
 
-                    String apiUrl = "${ENV.baseURL}/register";
-
                     Map<String, dynamic> userbody = {
                       'details': {
                         'userName': _usernameController.text.trim(),
@@ -404,7 +402,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     try {
                       // Send the POST request
                       final signupresponse = await http.post(
-                        Uri.parse(apiUrl),
+                        ENV.registerurl,
                         headers: {
                           'Content-Type': 'application/json',
                         },
@@ -422,14 +420,14 @@ class _SignUpPageState extends State<SignUpPage> {
                         }
                         context.read<DataCubit>().updateData(userDataMap);
                         Get.snackbar("Account Created",
-                            "Your account has been created succesfully.", backgroundColor: Colors.white);
+                            "Your account has been created succesfully.");
 
                         Get.offAllNamed('/homepage');
                       } else {
-                        Get.snackbar("Failed", "Failed to create account.", backgroundColor: Colors.white);
+                        Get.snackbar("Failed", "Failed to create account.");
                       }
                     } catch (e) {
-                      Get.snackbar("Error", e.toString(), backgroundColor: Colors.white);
+                      Get.snackbar("Error", e.toString());
                     }
                     setState(() {
                       isProcessing = false;
