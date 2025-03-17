@@ -52,7 +52,9 @@ class _UserHomePageState extends State<UserHomePage> {
                     color: Colors.white,
                     size: screenWidth * (24 / 375),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Get.toNamed('/profilepage');
+                  },
                 ),
                 Padding(
                   padding: EdgeInsets.only(right: screenWidth * (16 / 375)),
