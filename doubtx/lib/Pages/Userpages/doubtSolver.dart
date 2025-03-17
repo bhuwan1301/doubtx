@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:doubtx/Bloc/user_data_bloc.dart';
 import 'package:doubtx/env.dart';
@@ -9,6 +10,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+
+// Debouncer class to handle delayed actions
+class Debouncer {
+  final int milliseconds;
+  Timer? _timer;
+
+  Debouncer({required this.milliseconds});
+
+  void run(VoidCallback action) {
+    _timer?.cancel();
+    _timer = Timer(Duration(milliseconds: milliseconds), action);
+  }
+
+  void dispose() {
+    _timer?.cancel();
+  }
+}
 
 class DoubtSolverPage extends StatefulWidget {
   const DoubtSolverPage({Key? key}) : super(key: key);
@@ -22,6 +40,8 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
   late List<dynamic>? prompts;
   late List<dynamic>? responses;
   bool fetchingResponse = false;
+  String _currentText = ''; // Track the current text input
+  final _debouncer = Debouncer(milliseconds: 50); // Create a debouncer
 
   // Add a ScrollController to manage scrolling
   final ScrollController _scrollController = ScrollController();
@@ -41,6 +61,7 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
   void dispose() {
     _textController.dispose();
     _scrollController.dispose(); // Dispose the scroll controller
+    _debouncer.dispose(); // Dispose the debouncer
     super.dispose();
   }
 
@@ -50,6 +71,52 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
     super.initState();
     // Add post-frame callback to scroll to bottom after build completes
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+  }
+
+  // Send message function
+  Future<void> _sendMessage() async {
+    if (_currentText.trim().isEmpty || fetchingResponse) return;
+
+    Map<String, dynamic>? user = context.read<DataCubit>().state;
+    Map<String, dynamic> promptsAndResponses = context.read<MessagesCubit>().state;
+
+    setState(() {
+      fetchingResponse = true;
+    });
+    
+    try {
+      final getresponse = await http.post(
+        ENV.getresponseurl,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'username': user!['userName'],
+          'prompt': _currentText,
+        }),
+      );
+
+      if (getresponse.statusCode == 200) {
+        final getresponsedata = jsonDecode(getresponse.body);
+        responses!.add(getresponsedata['response']['text']);
+        prompts!.add(_currentText.trim());
+        promptsAndResponses['userPrompts'] = prompts!;
+        promptsAndResponses['bodhxResponses'] = responses!;
+        context.read<MessagesCubit>().updateData(promptsAndResponses);
+        setState(() {
+          _textController.clear();
+          _currentText = '';
+        });
+      } else {
+        Get.snackbar("Failed", "Couldn't get the response, please try again later");
+      }
+    } catch (e) {
+      Get.snackbar("Error", e.toString());
+    }
+    
+    setState(() {
+      fetchingResponse = false;
+    });
   }
 
   @override
@@ -231,7 +298,7 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      "Generating Reponse...",
+                      "Generating Response...",
                       style: TextStyle(color: Colors.black),
                     ),
                     SizedBox(
@@ -276,6 +343,18 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
                             hintStyle: TextStyle(color: Colors.grey),
                             border: InputBorder.none,
                           ),
+                          onChanged: (text) {
+                            // Use debouncer to update the current text
+                            _debouncer.run(() {
+                              setState(() {
+                                _currentText = text;
+                              });
+                            });
+                          },
+                          onSubmitted: (text) {
+                            // Handle submit when user presses enter/done
+                            _sendMessage();
+                          },
                         ),
                       ),
                     ),
@@ -290,53 +369,9 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
                     ),
                     child: IconButton(
                       icon: Image(image: AssetImage('assets/send.png')),
-                      onPressed: _textController.text.trim().isEmpty
+                      onPressed: _currentText.trim().isEmpty || fetchingResponse
                           ? null
-                          : fetchingResponse
-                              ? null
-                              : () async {
-                                  setState(() {
-                                    fetchingResponse = true;
-                                  });
-                                  try {
-                                    final getresponse =
-                                        await http.post(ENV.getresponseurl,
-                                            headers: {
-                                              'Content-Type':
-                                                  'application/json',
-                                            },
-                                            body: jsonEncode({
-                                              'username': user!['userName'],
-                                              'prompt': _textController.text,
-                                            }));
-
-                                    if (getresponse.statusCode == 200) {
-                                      final getresponsedata =
-                                          jsonDecode(getresponse.body);
-                                      responses!.add(
-                                          getresponsedata['response']['text']);
-                                      prompts!.add(_textController.text.trim());
-                                      promptsAndResponses['userPrompts'] =
-                                          prompts!;
-                                      promptsAndResponses['bodhxResponses'] =
-                                          responses!;
-                                      context
-                                          .read<MessagesCubit>()
-                                          .updateData(promptsAndResponses);
-                                      setState(() {
-                                        _textController.clear();
-                                      });
-                                    } else {
-                                      Get.snackbar("Failed",
-                                          "Couldn't get the response, please try again later");
-                                    }
-                                  } catch (e) {
-                                    Get.snackbar("Error", e.toString());
-                                  }
-                                  setState(() {
-                                    fetchingResponse = false;
-                                  });
-                                },
+                          : _sendMessage,
                     ),
                   ),
                 ],

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart' as flutter_bloc;
 import 'package:doubtx/Bloc/user_data_bloc.dart';
 import 'package:get/get.dart';
 import 'package:doubtx/Utils/user_utils.dart';
+import 'package:doubtx/Bloc/messages_bloc.dart';
 
 class UserHomePage extends StatefulWidget {
   const UserHomePage({super.key});
@@ -14,6 +15,8 @@ class UserHomePage extends StatefulWidget {
 class _UserHomePageState extends State<UserHomePage> {
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> promptsAndResponses =
+        context.watch<MessagesCubit>().state;
     Map<String, dynamic>? user = context.watch<DataCubit>().state;
 
     double screenWidth = MediaQuery.of(context).size.width;
