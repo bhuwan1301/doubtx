@@ -52,20 +52,22 @@ class _UserHomePageState extends State<UserHomePage> {
                     color: Colors.white,
                     size: screenWidth * (24 / 375),
                   ),
-                  onPressed: () {
-                    Get.toNamed('/profilepage');
-                  },
+                  onPressed: () {},
                 ),
                 Padding(
                   padding: EdgeInsets.only(right: screenWidth * (16 / 375)),
                   child: CircleAvatar(
                     radius: screenWidth * (18 / 375),
                     backgroundColor: Colors.grey[300],
-                    child: Icon(
-                      Icons.person,
-                      color: Colors.grey,
-                      size: screenWidth * (20 / 375),
-                    ),
+                    child: IconButton(
+                        onPressed: () {
+                          Get.toNamed('/profilepage');
+                        },
+                        icon: Icon(
+                          Icons.person,
+                          color: Colors.grey,
+                          size: screenWidth * (20 / 375),
+                        )),
                   ),
                 ),
               ],
