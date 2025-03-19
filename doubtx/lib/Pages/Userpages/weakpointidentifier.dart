@@ -18,6 +18,7 @@ class WeakPointIdentifierPage extends StatefulWidget {
 
 class _WeakPointIdentifierPageState extends State<WeakPointIdentifierPage> {
   bool isUpdating = false;
+  bool isRemovingWeakTopic = false;
 
   @override
   Widget build(BuildContext context) {
@@ -244,13 +245,16 @@ class _WeakPointIdentifierPageState extends State<WeakPointIdentifierPage> {
                         ),
                       ),
                       IconButton(
-                          onPressed: () {
+                          onPressed: isRemovingWeakTopic? null : () {
                             Get.defaultDialog(
                                 title: "Remove from Weak Points?",
                                 middleText:
-                                    "Are you sure you want to remove '${topic}hhhhhhhh' from weak topics?",
+                                    "Are you sure you want to remove '${topic}' from weak topics?",
                                 onCancel: () {},
                                 onConfirm: () async {
+                                  setState((){
+                                    isRemovingWeakTopic = true;
+                                  });
                                   try {
                                     final removeweaktopicresponse =
                                         await http.post(ENV.removeweakpointurl,
@@ -285,11 +289,19 @@ class _WeakPointIdentifierPageState extends State<WeakPointIdentifierPage> {
                                     Get.snackbar("Error", e.toString());
                                   }
                                   Get.back();
+                                  setState((){
+                                    isRemovingWeakTopic = false;
+                                  });
                                 });
                           },
-                          icon: Icon(
+                          icon:isRemovingWeakTopic?Icon(
                             Icons.delete,
                             size: screenWidth * (17 / 375),
+                            color: const Color.fromARGB(130, 3, 168, 244),
+                          ) : Icon(
+                            Icons.delete,
+                            size: screenWidth * (17 / 375),
+                            color: Colors.lightBlue,
                           ))
                     ],
                   ),
