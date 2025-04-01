@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:doubtx/Pages/Userpages/quizanalysis.dart';
 import 'package:doubtx/Utils/common_utils.dart';
@@ -25,6 +26,99 @@ class _QuizPageState extends State<QuizPage> {
   int score = 0;
   Map<String, dynamic> chosenAnswers = {};
 
+  // Timer variables
+  Timer? _timer;
+  int _timeLeft = 20 * 60; // 20 minutes in seconds
+
+  @override
+  void initState() {
+    super.initState();
+    // Start the timer when the page loads
+    startTimer();
+  }
+
+  @override
+  void dispose() {
+    // Cancel the timer when the widget is disposed
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  // Function to start the timer
+  void startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_timeLeft > 0) {
+          _timeLeft--;
+        } else {
+          // When timer reaches zero, cancel it and call the submit function
+          _timer?.cancel();
+          if (!quizended && !endingQuiz) {
+            submitQuiz();
+          }
+        }
+      });
+    });
+  }
+
+  // Format time as MM:SS
+  String formatTime() {
+    int minutes = _timeLeft ~/ 60;
+    int seconds = _timeLeft % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  // The submit quiz function
+  Future<void> submitQuiz() async {
+    if (endingQuiz) return;
+
+    Map<String, dynamic>? user = context.read<DataCubit>().state;
+
+    setState(() {
+      endingQuiz = true;
+    });
+
+    int total = 0;
+    for (int i = 1; i <= widget.questions.length; i++) {
+      print(widget.questions["mcq$i"]["Answer"]);
+      print(chosenAnswers["mcq$i"]);
+      if (chosenAnswers["mcq$i"] != null &&
+          widget.questions["mcq$i"]["Answer"] == chosenAnswers["mcq$i"]) {
+        total++;
+      }
+    }
+
+    await Future.delayed(const Duration(seconds: 2));
+    if ((total / widget.questions.length) >= 0.9) {
+      print("Removing weak point");
+      final removeweakpointresponse = await http.post(ENV.removeweakpointurl,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'username': user!['userName'],
+            'weakpoint': widget.topic,
+          }));
+      if (removeweakpointresponse.statusCode == 200) {
+        final removeweakpointresponsebody =
+            jsonDecode(removeweakpointresponse.body);
+        user['WeakPoints'] = removeweakpointresponsebody['newWeakPoints'];
+        context.read<DataCubit>().updateData(user);
+        print("Removed weak point");
+      } else {
+        CommonUtils.mySnackbar(
+            "Something went wrong", "We couldn't modify your weak points.");
+      }
+    }
+    print("Score: $total");
+
+    setState(() {
+      endingQuiz = false;
+      score = total;
+      quizended = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic>? user = context.watch<DataCubit>().state;
@@ -35,27 +129,33 @@ class _QuizPageState extends State<QuizPage> {
         canPop: false,
         onPopInvoked: (didPop) async {
           if (didPop) return;
-          Get.defaultDialog(
-              title: "End Quiz?",
-              content: Text(
-                "Are you sure you want to end this quiz? All your progress will be lost.",
-                style: TextStyle(color: Colors.white),
-              ),
-              titlePadding: EdgeInsets.all(10),
-              contentPadding: EdgeInsets.all(10),
-              textConfirm: "Yes",
-              textCancel: "No",
-              backgroundColor: Color(0xff141718),
-              buttonColor: Color(0xff141718),
-              radius: 15,
-              cancelTextColor: Colors.blue,
-              confirmTextColor: Colors.red,
-              titleStyle: TextStyle(color: Colors.white),
-              onCancel: () {},
-              onConfirm: () {
-                Get.back();
-                Get.back();
-              });
+          if (quizended) {
+            Get.back();
+          } else {
+            Get.defaultDialog(
+                title: "End Quiz?",
+                content: Text(
+                  "Are you sure you want to end this quiz? All your progress will be lost.",
+                  style: TextStyle(color: Colors.white),
+                ),
+                titlePadding: EdgeInsets.all(10),
+                contentPadding: EdgeInsets.all(10),
+                textConfirm: "Yes",
+                textCancel: "No",
+                backgroundColor: Color(0xff141718),
+                buttonColor: Color(0xff141718),
+                radius: 15,
+                cancelTextColor: Colors.blue,
+                confirmTextColor: Colors.red,
+                titleStyle: TextStyle(color: Colors.white),
+                onCancel: () {},
+                onConfirm: () {
+                  // Cancel the timer when quitting
+                  _timer?.cancel();
+                  Get.back();
+                  Get.back();
+                });
+          }
         },
         child: Scaffold(
           backgroundColor: CommonUserUtils.bgColor,
@@ -67,6 +167,37 @@ class _QuizPageState extends State<QuizPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(height: 20),
+                        // Timer display at the top right
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: _timeLeft < 60
+                                  ? Colors.red
+                                  : Color(0xff11A8AE),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.timer,
+                                    color: Colors.white, size: 20),
+                                SizedBox(width: 5),
+                                Text(
+                                  formatTime(),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10),
                         SizedBox(
                           height: 50,
                           child: SingleChildScrollView(
@@ -154,16 +285,13 @@ class _QuizPageState extends State<QuizPage> {
                               ),
                               SizedBox(width: 10),
                               Expanded(
-                                // Add this wrapper
                                 child: Text(
                                   widget.questions["mcq$qno"]["Options"][0],
                                   style: TextStyle(
-                                    fontSize: screenWidth *
-                                        (16 / 375), // Fixed font size
+                                    fontSize: screenWidth * (16 / 375),
                                   ),
-                                  softWrap: true, // Enables text wrapping
-                                  overflow: TextOverflow
-                                      .visible, // or TextOverflow.ellipsis if you want ...
+                                  softWrap: true,
+                                  overflow: TextOverflow.visible,
                                 ),
                               ),
                             ],
@@ -197,16 +325,13 @@ class _QuizPageState extends State<QuizPage> {
                               ),
                               SizedBox(width: 10),
                               Expanded(
-                                // Add this wrapper
                                 child: Text(
                                   widget.questions["mcq$qno"]["Options"][1],
                                   style: TextStyle(
-                                    fontSize: screenWidth *
-                                        (16 / 375), // Fixed font size
+                                    fontSize: screenWidth * (16 / 375),
                                   ),
-                                  softWrap: true, // Enables text wrapping
-                                  overflow: TextOverflow
-                                      .visible, // or TextOverflow.ellipsis if you want ...
+                                  softWrap: true,
+                                  overflow: TextOverflow.visible,
                                 ),
                               ),
                             ],
@@ -240,16 +365,13 @@ class _QuizPageState extends State<QuizPage> {
                               ),
                               SizedBox(width: 10),
                               Expanded(
-                                // Add this wrapper
                                 child: Text(
                                   widget.questions["mcq$qno"]["Options"][2],
                                   style: TextStyle(
-                                    fontSize: screenWidth *
-                                        (16 / 375), // Fixed font size
+                                    fontSize: screenWidth * (16 / 375),
                                   ),
-                                  softWrap: true, // Enables text wrapping
-                                  overflow: TextOverflow
-                                      .visible, // or TextOverflow.ellipsis if you want ...
+                                  softWrap: true,
+                                  overflow: TextOverflow.visible,
                                 ),
                               ),
                             ],
@@ -283,16 +405,13 @@ class _QuizPageState extends State<QuizPage> {
                               ),
                               SizedBox(width: 10),
                               Expanded(
-                                // Add this wrapper
                                 child: Text(
                                   widget.questions["mcq$qno"]["Options"][3],
                                   style: TextStyle(
-                                    fontSize: screenWidth *
-                                        (16 / 375), // Fixed font size
+                                    fontSize: screenWidth * (16 / 375),
                                   ),
-                                  softWrap: true, // Enables text wrapping
-                                  overflow: TextOverflow
-                                      .visible, // or TextOverflow.ellipsis if you want ...
+                                  softWrap: true,
+                                  overflow: TextOverflow.visible,
                                 ),
                               ),
                             ],
@@ -327,81 +446,15 @@ class _QuizPageState extends State<QuizPage> {
                             ),
                             Expanded(
                               child: ElevatedButton(
-                                  onPressed: endingQuiz
-                                      ? null
-                                      : () async {
-                                          setState(() {
-                                            endingQuiz = true;
-                                          });
-                                          int total = 0;
-                                          for (int i = 1;
-                                              i <= widget.questions.length;
-                                              i++) {
-                                            print(widget.questions["mcq$i"]
-                                                ["Answer"]);
-                                            print(chosenAnswers["mcq$i"]);
-                                            if (chosenAnswers["mcq$i"] !=
-                                                    null &&
-                                                widget.questions["mcq$i"]
-                                                        ["Answer"] ==
-                                                    chosenAnswers["mcq$i"]) {
-                                              total++;
-                                            }
-                                          }
-
-                                          await Future.delayed(
-                                              const Duration(seconds: 2));
-                                          if ((total /
-                                                  widget.questions.length) >=
-                                              0.9) {
-                                            print("Removing weak point");
-                                            final removeweakpointresponse =
-                                                await http.post(
-                                                    ENV.removeweakpointurl,
-                                                    headers: {
-                                                      'Content-Type':
-                                                          'application/json',
-                                                    },
-                                                    body: jsonEncode({
-                                                      'username':
-                                                          user!['userName'],
-                                                      'weakpoint': widget.topic,
-                                                    }));
-                                            if (removeweakpointresponse
-                                                    .statusCode ==
-                                                200) {
-                                              final removeweakpointresponsebody =
-                                                  jsonDecode(
-                                                      removeweakpointresponse
-                                                          .body);
-                                              user['WeakPoints'] =
-                                                  removeweakpointresponsebody[
-                                                      'newWeakPoints'];
-                                              context
-                                                  .read<DataCubit>()
-                                                  .updateData(user);
-                                              print("Removed weak point");
-                                            } else {
-                                              CommonUtils.mySnackbar(
-                                                  "Something went wrong",
-                                                  "We couldn't modify your weak points.");
-                                            }
-                                          }
-                                          print("Score: $total");
-
-                                          setState(() {
-                                            endingQuiz = false;
-                                            score = total;
-                                            quizended = true;
-                                          });
-                                        },
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      elevation: 0),
-                                  child: Text(
-                                    "Submit",
-                                    style: TextStyle(color: Color(0xff11A8AE)),
-                                  )),
+                                onPressed: endingQuiz ? null : submitQuiz,
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    elevation: 0),
+                                child: Text(
+                                  "Submit",
+                                  style: TextStyle(color: Color(0xff11A8AE)),
+                                ),
+                              ),
                             ),
                             GestureDetector(
                               onTap: () {
@@ -476,7 +529,10 @@ class _QuizPageState extends State<QuizPage> {
                         SizedBox(height: 30),
                         ElevatedButton(
                           onPressed: () {
-                            Get.to(QuizAnalysisPage(questions: widget.questions, chosenAnswers: chosenAnswers,));
+                            Get.to(QuizAnalysisPage(
+                              questions: widget.questions,
+                              chosenAnswers: chosenAnswers,
+                            ));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xff11A8AE),
