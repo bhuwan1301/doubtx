@@ -20,33 +20,7 @@ class _QuizAnalysisPageState extends State<QuizAnalysisPage> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
-    return PopScope(
-        canPop: false,
-        onPopInvoked: (didPop) async {
-          if (didPop) return;
-          Get.defaultDialog(
-              title: "End Quiz?",
-              content: Text(
-                "Are you sure you want to end this quiz? All your progress will be lost.",
-                style: TextStyle(color: Colors.white),
-              ),
-              titlePadding: EdgeInsets.all(10),
-              contentPadding: EdgeInsets.all(10),
-              textConfirm: "Yes",
-              textCancel: "No",
-              backgroundColor: Color(0xff141718),
-              buttonColor: Color(0xff141718),
-              radius: 15,
-              cancelTextColor: Colors.blue,
-              confirmTextColor: Colors.red,
-              titleStyle: TextStyle(color: Colors.white),
-              onCancel: () {},
-              onConfirm: () {
-                Get.back();
-                Get.back();
-              });
-        },
-        child: Scaffold(
+    return Scaffold(
           backgroundColor: CommonUserUtils.bgColor,
           appBar: AppBar(
             backgroundColor: CommonUserUtils.bgColor,
@@ -323,6 +297,6 @@ class _QuizAnalysisPageState extends State<QuizAnalysisPage> {
               ),
             ),
           ),
-        ));
+        );
   }
 }
