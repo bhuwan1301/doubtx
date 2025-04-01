@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:doubtx/Bloc/user_data_bloc.dart';
+import 'package:doubtx/Utils/common_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -161,57 +162,57 @@ class _LoginPageState extends State<LoginPage> {
                               Get.offAllNamed('/homepage');
 
                             case 404:
-                              Get.snackbar(
+                              CommonUtils.mySnackbar(
                                 "Error",
                                 "Couldn't fetch user data",
                               );
 
                             case 500:
-                              Get.snackbar(
+                              CommonUtils.mySnackbar(
                                 "Error",
                                 jsonDecode(loginresponse.body),
                               );
                             default:
-                              Get.snackbar(
+                              CommonUtils.mySnackbar(
                                 "Error",
                                 "Some error occured",
                               );
                           }
                         } catch (e) {
-                          Get.snackbar(
+                          CommonUtils.mySnackbar(
                             "Error",
                             e.toString(),
                           );
                         }
 
                       case 401:
-                        Get.snackbar(
+                        CommonUtils.mySnackbar(
                           "Failed",
                           "Invalid username or password",
                         );
                       case 403:
-                        Get.snackbar(
+                        CommonUtils.mySnackbar(
                           "Account locked",
                           "Your account has been locked, please contact support",
                         );
                       case 404:
-                        Get.snackbar(
+                        CommonUtils.mySnackbar(
                           "Account not found",
                           "Couldn't find an account with provided credentials",
                         );
                       case 500:
-                        Get.snackbar(
+                        CommonUtils.mySnackbar(
                           "Error",
                           "Server error occured",
                         );
                       default:
-                        Get.snackbar(
+                        CommonUtils.mySnackbar(
                           "Error",
                           "An error occured",
                         );
                     }
                   } catch (e) {
-                    Get.snackbar(
+                    CommonUtils.mySnackbar(
                       "Error",
                       e.toString(),
                     );

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:doubtx/Bloc/user_data_bloc.dart';
+import 'package:doubtx/Utils/common_utils.dart';
 import 'package:doubtx/Utils/user_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -132,12 +133,14 @@ class _SmartStudyPlannerPageState extends State<SmartStudyPlannerPage> {
                                   user['StudyPlan'] =
                                       updateresponseData['studyPlan'];
                                   context.read<DataCubit>().updateData(user);
+                                  CommonUtils.mySnackbar("Updated",
+                                      "Your data has been updated succesfully");
                                 } else {
-                                  Get.snackbar("Couldn't update",
+                                  CommonUtils.mySnackbar("Couldn't update",
                                       "Please try again later");
                                 }
                               } catch (e) {
-                                Get.snackbar("Error", e.toString());
+                                CommonUtils.mySnackbar("Error", e.toString());
                               }
 
                               setState(() {
@@ -145,7 +148,7 @@ class _SmartStudyPlannerPageState extends State<SmartStudyPlannerPage> {
                               });
                             },
                       child: Text(
-                        "UPDATE",
+                        isUpdating ? "UPDATING..." : "UPDATE",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.black,
@@ -301,9 +304,8 @@ class SubjectCard extends StatelessWidget {
                 // Topics count and hours
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15)
-                  ),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15)),
                   padding: EdgeInsets.all(10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

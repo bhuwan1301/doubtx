@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:doubtx/Bloc/user_data_bloc.dart';
+import 'package:doubtx/Utils/common_utils.dart';
 import 'package:doubtx/env.dart';
 import 'package:doubtx/Bloc/messages_bloc.dart';
 import 'package:doubtx/Utils/user_utils.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 // Debouncer class to handle delayed actions
 class Debouncer {
@@ -43,6 +45,10 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
   String _currentText = ''; // Track the current text input
   final _debouncer = Debouncer(milliseconds: 50); // Create a debouncer
 
+  // Speech to text variables
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
+
   // Add a ScrollController to manage scrolling
   final ScrollController _scrollController = ScrollController();
 
@@ -69,8 +75,74 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
   @override
   void initState() {
     super.initState();
+    // Initialize speech to text
+    _speech = stt.SpeechToText();
     // Add post-frame callback to scroll to bottom after build completes
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+  }
+
+  // Initialize speech recognition
+  Future<void> _initSpeech() async {
+    bool available = await _speech.initialize(
+      onStatus: (status) {
+        if (status == 'notListening') {
+          setState(() {
+            _isListening = false;
+          });
+        }
+      },
+      onError: (errorNotification) {
+        setState(() {
+          _isListening = false;
+        });
+        CommonUtils.mySnackbar("Speech Error",
+            "Speech recognition failed: ${errorNotification.errorMsg}");
+      },
+    );
+
+    if (!available) {
+      CommonUtils.mySnackbar("Speech Unavailable",
+          "Speech recognition is not available on this device");
+    }
+  }
+
+  // Toggle speech recognition
+  void _toggleListening() async {
+    if (!_isListening) {
+      // Make sure speech is initialized
+      if (!_speech.isAvailable) {
+        await _initSpeech();
+      }
+
+      bool available = await _speech.initialize();
+      if (available) {
+        setState(() {
+          _isListening = true;
+        });
+
+        await _speech.listen(
+          onResult: (result) {
+            setState(() {
+              _currentText = result.recognizedWords;
+              _textController.text = _currentText;
+              // Move cursor to end of text
+              _textController.selection = TextSelection.fromPosition(
+                TextPosition(offset: _textController.text.length),
+              );
+            });
+          },
+          listenFor: Duration(seconds: 30),
+          pauseFor: Duration(seconds: 3),
+          partialResults: true,
+          localeId: 'en_US', // You can change this to support other languages
+        );
+      }
+    } else {
+      setState(() {
+        _isListening = false;
+      });
+      _speech.stop();
+    }
   }
 
   // Send message function
@@ -78,12 +150,13 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
     if (_currentText.trim().isEmpty || fetchingResponse) return;
 
     Map<String, dynamic>? user = context.read<DataCubit>().state;
-    Map<String, dynamic> promptsAndResponses = context.read<MessagesCubit>().state;
+    Map<String, dynamic> promptsAndResponses =
+        context.read<MessagesCubit>().state;
 
     setState(() {
       fetchingResponse = true;
     });
-    
+
     try {
       final getresponse = await http.post(
         ENV.getresponseurl,
@@ -108,12 +181,13 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
           _currentText = '';
         });
       } else {
-        Get.snackbar("Failed", "Couldn't get the response, please try again later");
+        CommonUtils.mySnackbar(
+            "Failed", "Couldn't get the response, please try again later");
       }
     } catch (e) {
-      Get.snackbar("Error", e.toString());
+      CommonUtils.mySnackbar("Error", e.toString());
     }
-    
+
     setState(() {
       fetchingResponse = false;
     });
@@ -149,11 +223,21 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
           IconButton(
               onPressed: () {
                 Get.defaultDialog(
-                  titlePadding: EdgeInsets.only(top: 10),
-                  contentPadding: EdgeInsets.all(20),
+                  titlePadding: EdgeInsets.all(10),
+                  contentPadding: EdgeInsets.all(10),
+                  textConfirm: "Yes",
+                  textCancel: "No",
+                  backgroundColor: Color(0xff141718),
+                  buttonColor: Color(0xff141718),
+                  radius: 15,
+                  cancelTextColor: Colors.blue,
+                  confirmTextColor: Colors.red,
+                  titleStyle: TextStyle(color: Colors.white),
                   title: "Clear conversations?",
-                  middleText:
-                      "Are you sure you want to clear conversations with BodhX?",
+                  content: Text(
+                    "Are you sure you want to clear conversations with BodhX?",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   onCancel: () {},
                   onConfirm: () {
                     context.read<MessagesCubit>().clearData();
@@ -163,12 +247,6 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
                 );
               },
               icon: Icon(Icons.delete)),
-          // IconButton(
-          //     onPressed: () {},
-          //     icon: Image.asset(
-          //       'assets/threedots.png',
-          //       width: screenWidth * (35 / 375),
-          //     )),
         ],
       ),
       backgroundColor: CommonUserUtils.bgColor,
@@ -275,11 +353,10 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
                                         ))
                                   ],
                                 ),
-                                // Replace the existing Markdown widget with this:
                                 MarkdownBody(
-                                  data: responses![index], 
-                                  selectable: true, 
-                                ),                                
+                                  data: responses![index],
+                                  selectable: true,
+                                ),
                               ],
                             ),
                           ),
@@ -320,10 +397,13 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
                   const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
               child: Row(
                 children: [
-                  // Mic icon button
+                  // Mic icon button - Updated to toggle speech recognition
                   IconButton(
-                    icon: const Icon(Icons.mic, color: Colors.white),
-                    onPressed: () {}, // Left as null as requested
+                    icon: Icon(
+                      _isListening ? Icons.mic : Icons.mic_none,
+                      color: _isListening ? Color(0xff11A8AE) : Colors.white,
+                    ),
+                    onPressed: _toggleListening,
                   ),
 
                   // Text input field
@@ -338,9 +418,15 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
                         child: TextField(
                           controller: _textController,
                           style: const TextStyle(color: Colors.white),
-                          decoration: const InputDecoration(
-                            hintText: 'Type a message',
-                            hintStyle: TextStyle(color: Colors.grey),
+                          decoration: InputDecoration(
+                            hintText: _isListening
+                                ? 'Listening...'
+                                : 'Type a message',
+                            hintStyle: TextStyle(
+                              color: _isListening
+                                  ? Color(0xff11A8AE)
+                                  : Colors.grey,
+                            ),
                             border: InputBorder.none,
                           ),
                           onChanged: (text) {

@@ -1,3 +1,4 @@
+import 'package:doubtx/Utils/common_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doubtx/Bloc/user_data_bloc.dart';
 import 'package:flutter/material.dart';
@@ -419,15 +420,15 @@ class _SignUpPageState extends State<SignUpPage> {
                           userDataMap.remove('passwordHash');
                         }
                         context.read<DataCubit>().updateData(userDataMap);
-                        Get.snackbar("Account Created",
+                        CommonUtils.mySnackbar("Account Created",
                             "Your account has been created succesfully.");
 
                         Get.offAllNamed('/homepage');
                       } else {
-                        Get.snackbar("Failed", "Failed to create account.");
+                        CommonUtils.mySnackbar("Failed", "Failed to create account.");
                       }
                     } catch (e) {
-                      Get.snackbar("Error", e.toString());
+                      CommonUtils.mySnackbar("Error", e.toString());
                     }
                     setState(() {
                       isProcessing = false;

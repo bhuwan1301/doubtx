@@ -1,23 +1,22 @@
-import 'package:doubtx/Utils/common_utils.dart';
+// import 'package:doubtx/Utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as flutter_bloc;
 import 'package:doubtx/Bloc/user_data_bloc.dart';
 import 'package:get/get.dart';
 import 'package:doubtx/Utils/user_utils.dart';
-import 'package:doubtx/Bloc/messages_bloc.dart';
+import 'package:doubtx/Pages/Userpages/startquiz.dart';
 
-class UserHomePage extends StatefulWidget {
-  const UserHomePage({super.key});
+class ChooseLevel extends StatefulWidget {
+  final String weakTopic;
+  const ChooseLevel({super.key, required this.weakTopic});
 
   @override
-  State<UserHomePage> createState() => _UserHomePageState();
+  State<ChooseLevel> createState() => _ChooseLevelState();
 }
 
-class _UserHomePageState extends State<UserHomePage> {
+class _ChooseLevelState extends State<ChooseLevel> {
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> promptsAndResponses =
-        context.watch<MessagesCubit>().state;
     Map<String, dynamic>? user = context.watch<DataCubit>().state;
 
     double screenWidth = MediaQuery.of(context).size.width;
@@ -40,41 +39,14 @@ class _UserHomePageState extends State<UserHomePage> {
             backgroundColor: CommonUserUtils.bgColor,
             appBar: AppBar(
               backgroundColor: CommonUserUtils.bgColor,
-              elevation: 0,
               leading: IconButton(
-                icon: Icon(
-                  Icons.menu,
-                  color: Colors.white,
-                  size: screenWidth * (24 / 375),
-                ),
-                onPressed: () {},
-              ),
-              actions: [
-                IconButton(
-                  icon: Icon(
-                    Icons.notifications_outlined,
-                    color: Colors.white,
-                    size: screenWidth * (24 / 375),
-                  ),
-                  onPressed: () {},
-                ),
-                Padding(
-                  padding: EdgeInsets.only(right: screenWidth * (16 / 375)),
-                  child: CircleAvatar(
-                    radius: screenWidth * (18 / 375),
-                    backgroundColor: Colors.grey[300],
-                    child: IconButton(
-                        onPressed: () {
-                          Get.toNamed('/profilepage');
-                        },
-                        icon: Icon(
-                          Icons.person,
-                          color: Colors.grey,
-                          size: screenWidth * (20 / 375),
-                        )),
-                  ),
-                ),
-              ],
+                  onPressed: () {
+                    Get.back();
+                  },
+                  icon: Image.asset(
+                    'assets/Back.png',
+                    width: screenWidth * (35 / 375),
+                  )),
             ),
             body: Padding(
               padding: EdgeInsets.all(screenWidth * (20 / 375)),
@@ -83,26 +55,18 @@ class _UserHomePageState extends State<UserHomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Greeting and Welcome Message
+
                     Text(
-                      "Hi ${user['firstName']}!",
+                      "📊 Weak Point Identifier - Strengthen Your Foundations with BodhX!",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: screenWidth * (30 / 375),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: screenWidth * (4 / 375)),
-                    Text(
-                      "Welcome to DoubtX!",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: screenWidth * (24 / 375),
+                        fontSize: screenWidth * (20 / 375),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(height: screenWidth * (12 / 375)),
                     Text(
-                      "Your AI-powered study companion – Smart. Fast. Personalized",
+                      "BodhX tracks your weak areas based on your doubts and study progress. To help you improve, each weak area comes with a Take MCQ Quiz button, offering:",
                       style: TextStyle(
                         color: Colors.grey,
                         fontSize: screenWidth * (14 / 375),
@@ -112,42 +76,51 @@ class _UserHomePageState extends State<UserHomePage> {
 
                     // Features List
                     _buildFeatureItem(
-                      "📚 Struggling with doubts? Need a study plan?",
+                      "✅ Easy Mode: 20 questions in 20 minutes",
                       screenWidth,
                     ),
                     SizedBox(height: screenWidth * (12 / 375)),
                     _buildFeatureItem(
-                      "Want to know where you're lagging? DoubtX has you covered!",
+                      "✅ Hard Mode: 10 challenging questions in 20 minutes",
                       screenWidth,
                     ),
                     SizedBox(height: screenWidth * (12 / 375)),
                     _buildFeatureItem(
-                      "✨ Pick your path & start learning smarter.",
+                      "Achieve 90% accuracy or more in both modes, and the weak area will be automatically removed from your list! 🚀",
                       screenWidth,
                     ),
-                    SizedBox(height: screenWidth * (36 / 375)),
+                    SizedBox(height: screenWidth * (12 / 375)),
+                    Center(
+                        child: Text(
+                      widget.weakTopic,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: screenWidth * (34 / 375),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue),
+                    )),
+                    SizedBox(height: 20),
 
                     // Action Buttons
+
                     _buildElevatedButton(
-                      'Smart Study\nPlanner',
+                      'Easy Mode',
                       () {
-                        Get.toNamed('/smartstudyplanner');
+                        Get.to(StartQuizPage(
+                          level: 'easy',
+                          topic: widget.weakTopic,
+                        ));
                       },
                       screenWidth,
                     ),
                     SizedBox(height: screenWidth * (16 / 375)),
                     _buildElevatedButton(
-                      'Doubt Solver',
+                      'Hard Mode',
                       () {
-                        Get.toNamed('/doubtSolver');
-                      },
-                      screenWidth,
-                    ),
-                    SizedBox(height: screenWidth * (16 / 375)),
-                    _buildElevatedButton(
-                      'Weak Point\nIdentifier',
-                      () {
-                        Get.toNamed('/weakPointIdentifier');
+                        Get.to(StartQuizPage(
+                          level: 'hard',
+                          topic: widget.weakTopic,
+                        ));
                       },
                       screenWidth,
                     ),
@@ -155,10 +128,6 @@ class _UserHomePageState extends State<UserHomePage> {
                   ],
                 ),
               ),
-            ),
-            bottomNavigationBar: DoubtXBottomNavBar(
-              screenWidth: screenWidth,
-              currentPage: 'home',
             ),
           );
   }
