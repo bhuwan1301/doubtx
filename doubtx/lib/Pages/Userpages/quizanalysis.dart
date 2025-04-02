@@ -246,6 +246,8 @@ class _QuizAnalysisPageState extends State<QuizAnalysisPage> {
                     Text("✅ Attempted"),
                   if (widget.chosenAnswers['mcq$qno'] == null)
                     Text("❌ Not Attempted"),
+                  SizedBox(height: 20),
+                  Text(widget.questions["mcq$qno"]["Explanation"]),
                   SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
