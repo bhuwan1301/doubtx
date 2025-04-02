@@ -106,7 +106,7 @@ class _QuizAnalysisPageState extends State<QuizAnalysisPage> {
                               shape: BoxShape.circle,
                               color: 0 == widget.questions["mcq$qno"]["Answer"]
                                   ? Colors.green
-                                  : Colors.red),
+                                  : widget.chosenAnswers["mcq$qno"]==null||widget.chosenAnswers["mcq$qno"]!=0?Colors.grey: Colors.red),
                           padding: EdgeInsets.all(15),
                           child: Text(
                             "A",
@@ -142,7 +142,7 @@ class _QuizAnalysisPageState extends State<QuizAnalysisPage> {
                               shape: BoxShape.circle,
                               color: 1 == widget.questions["mcq$qno"]["Answer"]
                                   ? Colors.green
-                                  : Colors.red),
+                                  : widget.chosenAnswers["mcq$qno"]==null||widget.chosenAnswers["mcq$qno"]!=1?Colors.grey: Colors.red),
                           padding: EdgeInsets.all(15),
                           child: Text(
                             "B",
@@ -178,7 +178,7 @@ class _QuizAnalysisPageState extends State<QuizAnalysisPage> {
                               shape: BoxShape.circle,
                               color: 2 == widget.questions["mcq$qno"]["Answer"]
                                   ? Colors.green
-                                  : Colors.red),
+                                  : widget.chosenAnswers["mcq$qno"]==null||widget.chosenAnswers["mcq$qno"]!=2?Colors.grey: Colors.red),
                           padding: EdgeInsets.all(15),
                           child: Text(
                             "C",
@@ -214,7 +214,7 @@ class _QuizAnalysisPageState extends State<QuizAnalysisPage> {
                               shape: BoxShape.circle,
                               color: 3 == widget.questions["mcq$qno"]["Answer"]
                                   ? Colors.green
-                                  : Colors.red),
+                                  : widget.chosenAnswers["mcq$qno"]==null||widget.chosenAnswers["mcq$qno"]!=3?Colors.grey: Colors.red),
                           padding: EdgeInsets.all(15),
                           child: Text(
                             "D",
