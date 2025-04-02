@@ -95,14 +95,17 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
         setState(() {
           _isListening = false;
         });
-        CommonUtils.mySnackbar("Speech Error",
-            "Speech recognition failed: ${errorNotification.errorMsg}");
+        CommonUtils.myDialogueBox(
+            title: "Speech Error",
+            middleText:
+                "Speech recognition failed: ${errorNotification.errorMsg}", textCancel: "Ok");
       },
     );
 
     if (!available) {
-      CommonUtils.mySnackbar("Speech Unavailable",
-          "Speech recognition is not available on this device");
+      CommonUtils.myDialogueBox(
+          title: "Speech Unavailable",
+          middleText: "Speech recognition is not available on this device", textCancel: "Ok");
     }
   }
 
@@ -181,11 +184,12 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
           _currentText = '';
         });
       } else {
-        CommonUtils.mySnackbar(
-            "Failed", "Couldn't get the response, please try again later");
+        CommonUtils.myDialogueBox(
+            title: "Failed",
+            middleText: "Couldn't get the response, please try again later", textCancel: "Ok");
       }
     } catch (e) {
-      CommonUtils.mySnackbar("Error", e.toString());
+      CommonUtils.myDialogueBox(title: "Error", middleText: e.toString(), textCancel: "Ok");
     }
 
     setState(() {
@@ -222,24 +226,13 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
         actions: [
           IconButton(
               onPressed: () {
-                Get.defaultDialog(
-                  titlePadding: EdgeInsets.all(10),
-                  contentPadding: EdgeInsets.all(10),
+                CommonUtils.myDialogueBox(
                   textConfirm: "Yes",
                   textCancel: "No",
-                  backgroundColor: Color(0xff141718),
-                  buttonColor: Color(0xff141718),
-                  radius: 15,
-                  cancelTextColor: Colors.blue,
-                  confirmTextColor: Colors.red,
-                  titleStyle: TextStyle(color: Colors.white),
                   title: "Clear conversations?",
-                  content: Text(
-                    "Are you sure you want to clear conversations with BodhX?",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onCancel: () {},
-                  onConfirm: () {
+                  middleText:
+                      "Are you sure you want to clear conversations with BodhX?",
+                  onconfirm:  () {
                     context.read<MessagesCubit>().clearData();
                     setState(() {});
                     Get.back();
@@ -398,13 +391,15 @@ class _DoubtSolverPageState extends State<DoubtSolverPage> {
               child: Row(
                 children: [
                   // Mic icon button - Updated to toggle speech recognition
-                  IconButton(
-                    icon: Icon(
-                      _isListening ? Icons.mic : Icons.mic_none,
-                      color: _isListening ? Color(0xff11A8AE) : Colors.white,
-                    ),
-                    onPressed: _toggleListening,
-                  ),
+                  // IconButton(
+                  //   icon: Icon(
+                  //     _isListening ? Icons.mic : Icons.mic_none,
+                  //     color: _isListening ? Color(0xff11A8AE) : Colors.white,
+                  //   ),
+                  //   onPressed: _toggleListening,
+                  // ),
+
+                  SizedBox(width: 10),
 
                   // Text input field
                   Expanded(

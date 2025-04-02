@@ -106,8 +106,9 @@ class _QuizPageState extends State<QuizPage> {
         context.read<DataCubit>().updateData(user);
         print("Removed weak point");
       } else {
-        CommonUtils.mySnackbar(
-            "Something went wrong", "We couldn't modify your weak points.");
+        CommonUtils.myDialogueBox(
+            title: "Something went wrong",
+            middleText: "We couldn't modify your weak points.", textCancel: "Ok");
       }
     }
     print("Score: $total");
@@ -132,24 +133,13 @@ class _QuizPageState extends State<QuizPage> {
           if (quizended) {
             Get.back();
           } else {
-            Get.defaultDialog(
+            CommonUtils.myDialogueBox(
                 title: "End Quiz?",
-                content: Text(
-                  "Are you sure you want to end this quiz? All your progress will be lost.",
-                  style: TextStyle(color: Colors.white),
-                ),
-                titlePadding: EdgeInsets.all(10),
-                contentPadding: EdgeInsets.all(10),
+                middleText:
+                    "Are you sure you want to end this quiz? All your progress will be lost.",
                 textConfirm: "Yes",
                 textCancel: "No",
-                backgroundColor: Color(0xff141718),
-                buttonColor: Color(0xff141718),
-                radius: 15,
-                cancelTextColor: Colors.blue,
-                confirmTextColor: Colors.red,
-                titleStyle: TextStyle(color: Colors.white),
-                onCancel: () {},
-                onConfirm: () {
+                onconfirm: () {
                   // Cancel the timer when quitting
                   _timer?.cancel();
                   Get.back();

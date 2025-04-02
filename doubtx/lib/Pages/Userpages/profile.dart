@@ -1,3 +1,4 @@
+import 'package:doubtx/Utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as flutter_bloc;
 import 'package:doubtx/Bloc/user_data_bloc.dart';
@@ -96,24 +97,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         Icons.question_mark),
                     SizedBox(height: 30),
                     _buildElevatedButton("Logout", () {
-                      Get.defaultDialog(
+                      CommonUtils.myDialogueBox(
                           title: "Log Out?",
-                          content: Text(
-                            "Are you sure you want to log out?",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          titlePadding: EdgeInsets.all(10),
-                          contentPadding: EdgeInsets.all(10),
+                          middleText: "Are you sure you want to log out?",
                           textConfirm: "Yes",
                           textCancel: "No",
-                          backgroundColor: Color(0xff141718),
-                          buttonColor: Color(0xff141718),
-                          radius: 15,
-                          cancelTextColor: Colors.blue,
-                          confirmTextColor: Colors.red,
-                          titleStyle: TextStyle(color: Colors.white),
-                          onCancel: () {},
-                          onConfirm: () {
+                          onconfirm: () {
                             context.read<DataCubit>().signOut();
                             context.read<MessagesCubit>().clearData();
                             Get.offAllNamed('/loginpage');

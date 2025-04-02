@@ -158,13 +158,18 @@ class _StartQuizPageState extends State<StartQuizPage> {
                                 final quizresponsebody =
                                     jsonDecode(quizresponse.body);
                                 print(quizresponsebody['resp']['mcqs']);
-                                Get.to(QuizPage(questions: quizresponsebody['resp']['mcqs'], topic: widget.topic,));
+                                Get.to(QuizPage(
+                                  questions: quizresponsebody['resp']['mcqs'],
+                                  topic: widget.topic,
+                                ));
                               } else {
-                                CommonUtils.mySnackbar("Couldn't load quiz",
-                                    "Please try again later");
+                                CommonUtils.myDialogueBox(
+                                    title: "Couldn't load quiz",
+                                    middleText: "Please try again later", textCancel: "Ok");
                               }
                             } catch (e) {
-                              CommonUtils.mySnackbar("Error", e.toString());
+                              CommonUtils.myDialogueBox(
+                                  title: "Error", middleText: e.toString(), textCancel: "Ok");
                               print(e.toString());
                             }
 

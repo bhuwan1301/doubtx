@@ -133,14 +133,18 @@ class _SmartStudyPlannerPageState extends State<SmartStudyPlannerPage> {
                                   user['StudyPlan'] =
                                       updateresponseData['studyPlan'];
                                   context.read<DataCubit>().updateData(user);
-                                  CommonUtils.mySnackbar("Updated",
-                                      "Your data has been updated succesfully");
+                                  CommonUtils.myDialogueBox(
+                                      title: "Updated",
+                                      middleText:
+                                          "Your data has been updated succesfully", textCancel: "Ok");
                                 } else {
-                                  CommonUtils.mySnackbar("Couldn't update",
-                                      "Please try again later");
+                                  CommonUtils.myDialogueBox(
+                                      title: "Couldn't update",
+                                      middleText: "Please try again later", textCancel: "Ok");
                                 }
                               } catch (e) {
-                                CommonUtils.mySnackbar("Error", e.toString());
+                                CommonUtils.myDialogueBox(
+                                    title: "Error", middleText: e.toString(), textCancel: "Ok");
                               }
 
                               setState(() {

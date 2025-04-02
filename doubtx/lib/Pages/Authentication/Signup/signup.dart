@@ -420,15 +420,20 @@ class _SignUpPageState extends State<SignUpPage> {
                           userDataMap.remove('passwordHash');
                         }
                         context.read<DataCubit>().updateData(userDataMap);
-                        CommonUtils.mySnackbar("Account Created",
-                            "Your account has been created succesfully.");
+                        CommonUtils.myDialogueBox(
+                            title: "Account Created",
+                            middleText:
+                                "Your account has been created succesfully.", textCancel: "Ok");
 
                         Get.offAllNamed('/homepage');
                       } else {
-                        CommonUtils.mySnackbar("Failed", "Failed to create account.");
+                        CommonUtils.myDialogueBox(
+                            title: "Failed",
+                            middleText: "Failed to create account.", textCancel: "Ok");
                       }
                     } catch (e) {
-                      CommonUtils.mySnackbar("Error", e.toString());
+                      CommonUtils.myDialogueBox(
+                          title: "Error", middleText: e.toString(), textCancel: "Ok");
                     }
                     setState(() {
                       isProcessing = false;

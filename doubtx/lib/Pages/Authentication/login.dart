@@ -162,60 +162,63 @@ class _LoginPageState extends State<LoginPage> {
                               Get.offAllNamed('/homepage');
 
                             case 404:
-                              CommonUtils.mySnackbar(
-                                "Error",
-                                "Couldn't fetch user data",
-                              );
+                              CommonUtils.myDialogueBox(
+                                  title: "Error",
+                                  middleText: "Couldn't fetch user data",
+                                  textCancel: "Ok");
 
                             case 500:
-                              CommonUtils.mySnackbar(
-                                "Error",
-                                jsonDecode(loginresponse.body),
-                              );
+                              CommonUtils.myDialogueBox(
+                                  title: "Error",
+                                  middleText: jsonDecode(loginresponse.body),
+                                  textCancel: "Ok");
                             default:
-                              CommonUtils.mySnackbar(
-                                "Error",
-                                "Some error occured",
-                              );
+                              CommonUtils.myDialogueBox(
+                                  title: "Error",
+                                  middleText: "Some error occured",
+                                  textCancel: "Ok");
                           }
                         } catch (e) {
-                          CommonUtils.mySnackbar(
-                            "Error",
-                            e.toString(),
-                          );
+                          CommonUtils.myDialogueBox(
+                              title: "Error",
+                              middleText: e.toString(),
+                              textCancel: "Ok");
                         }
 
                       case 401:
-                        CommonUtils.mySnackbar(
-                          "Failed",
-                          "Invalid username or password",
-                        );
+                        CommonUtils.myDialogueBox(
+                            title: "Invalid credentials",
+                            middleText:
+                                "Please ensure the username and password you have entered are correct.",
+                            textCancel: "Ok");
                       case 403:
-                        CommonUtils.mySnackbar(
-                          "Account locked",
-                          "Your account has been locked, please contact support",
-                        );
+                        CommonUtils.myDialogueBox(
+                            title: "Account locked",
+                            middleText:
+                                "Your account has been locked, please contact support",
+                            textCancel: "Ok");
                       case 404:
-                        CommonUtils.mySnackbar(
-                          "Account not found",
-                          "Couldn't find an account with provided credentials",
-                        );
+                        CommonUtils.myDialogueBox(
+                            title: "Account not found",
+                            middleText:
+                                "Couldn't find an account with provided credentials",
+                            textCancel: "Ok");
                       case 500:
-                        CommonUtils.mySnackbar(
-                          "Error",
-                          "Server error occured",
-                        );
+                        CommonUtils.myDialogueBox(
+                            title: "Error",
+                            middleText: "Server error occured",
+                            textCancel: "Ok");
                       default:
-                        CommonUtils.mySnackbar(
-                          "Error",
-                          "An error occured",
-                        );
+                        CommonUtils.myDialogueBox(
+                            title: "Error",
+                            middleText: "An error occured",
+                            textCancel: "Ok");
                     }
                   } catch (e) {
-                    CommonUtils.mySnackbar(
-                      "Error",
-                      e.toString(),
-                    );
+                    CommonUtils.myDialogueBox(
+                        title: "Error",
+                        middleText: e.toString(),
+                        textCancel: "Ok");
                   }
 
                   setState(() {

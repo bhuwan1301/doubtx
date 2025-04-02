@@ -28,7 +28,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<String> descriptions = [
     'Get a custom study schedule tailored to your strengths & weaknesses. Stay on track effortlessly!',
-    'Snap a photo or type a question—DOUBTX solves it step-by-step in seconds!',
+    'Ask a question and DOUBTX solves it step-by-step in seconds!',
     'DOUBTX analyses your performance & suggests targeted resources to improve faster!',
   ];
 
